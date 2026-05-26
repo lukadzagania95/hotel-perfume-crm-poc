@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum OpportunityStatus {
+  OPPORTUNITY
+  INTEREST
+  SALE
+  FAIL
+}
+
+enum EmailTemplateType {
+  PLACEMENT_INQUIRY
+  SAMPLE_USAGE_PURCHASE_INQUIRY
+  PURCHASE_FOLLOW_UP
+}
+
+enum EmailLogStatus {
+  DRAFT
+  SIMULATED
+}
+
+model Hotel {
+  id                   String        @id @default(cuid())
+  hotelName            String
+  contactEmail         String
+  originalProductStock Int
+  currentProductStock  Int
+  originalSampleStock  Int
+  currentSampleStock   Int
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  opportunities        Opportunity[]
+  emailLogs            EmailLog[]
+  stockEvents          StockEvent[]
+}
+
+model Opportunity {
+  id                   String            @id @default(cuid())
+  hotelId              String
+  status               OpportunityStatus @default(OPPORTUNITY)
+  roomLabel            String?
+  notes                String?
+  samplePlacedAt       DateTime          @default(now())
+  sampleUsedAt         DateTime?
+  productSoldAt        DateTime?
+  failedAt             DateTime?
+  sampleStockDeducted  Boolean           @default(false)
+  productStockDeducted Boolean           @default(false)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  hotel                Hotel             @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  stockEvents          StockEvent[]
+}
+
+model StockEvent {
+  id            String      @id @default(cuid())
+  hotelId       String
+  opportunityId String?
+  eventType     String
+  quantity      Int
+  reason        String
+  createdAt     DateTime    @default(now())
+
+  hotel         Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+}
+
+model EmailTemplate {
+  id        String            @id @default(cuid())
+  type      EmailTemplateType @unique
+  label     String
+  subject   String
+  body      String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model EmailSchedule {
+  id            String            @id @default(cuid())
+  templateType  EmailTemplateType @unique
+  frequencyDays Int
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model EmailLog {
+  id             String            @id @default(cuid())
+  hotelId        String
+  templateType   EmailTemplateType
+  templateLabel  String
+  recipientEmail String
+  subject        String
+  body           String
+  status         EmailLogStatus    @default(DRAFT)
+  createdAt      DateTime          @default(now())
+
+  hotel          Hotel             @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+}

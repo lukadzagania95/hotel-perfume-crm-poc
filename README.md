@@ -6,6 +6,51 @@ The first phase is documentation and product context setup only. It defines the 
 
 Application implementation will come later after this documentation is reviewed and approved. No frontend, backend, database schema, package installation, or production integration is included in this phase.
 
+## Local MVP App
+
+The repository now includes a simple local web app MVP for demonstrating the core CRM workflow. It uses Next.js, TypeScript, Prisma, and SQLite. It does not send real emails, parse real inbound emails, include authentication, or integrate with external CRM systems.
+
+### Setup
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Initialize the SQLite database:
+
+```bash
+npm run db:migrate
+```
+
+Seed sample hotels and default email templates:
+
+```bash
+npm run db:seed
+```
+
+Run the local dev server:
+
+```bash
+npm run dev
+```
+
+Then open `http://localhost:3000`.
+
+Useful development commands:
+
+```bash
+npm run typecheck
+npm run build
+```
+
 ## Business Context
 
 HOC runs a hotel sampling stream for perfume products. Hotels receive sample stock for selected rooms and full-size product stock that reception can sell to guests who ask to purchase after trying or discovering a sample.
