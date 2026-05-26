@@ -31,6 +31,7 @@ The future CRM should help track:
 - `docs/06_poc_scope.md` - practical POC boundaries
 - `docs/07_open_questions.md` - assumptions and unresolved product questions
 - `docs/08_future_build_plan.md` - future technical plan, without implementation
+- `docs/09_technical_mvp_plan.md` - technical MVP implementation plan, without app code
 - `backlog/epics_and_user_stories.md` - implementation-ready epics and user stories
 
 ## Key Assumptions
