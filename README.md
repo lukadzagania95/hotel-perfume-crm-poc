@@ -14,6 +14,7 @@ follow-up, and conservative processing of email replies.
   is supported, and a valid transition exists. Other messages go to manual review.
 - UI access is protected with a signed, HTTP-only administrator session in production; cron endpoints use a separate
   bearer secret, and `/api/health` exposes only non-sensitive readiness state.
+- `APP_BASE_URL` pins authentication redirects to the public HTTPS origin when deployed behind a reverse proxy.
 - Stock changes and the matching inbound-email record are committed in one database transaction.
 
 ## Local setup and personal email test

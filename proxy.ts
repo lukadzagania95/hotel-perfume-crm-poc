@@ -25,10 +25,9 @@ export async function proxy(request: NextRequest) {
   }
 
   const loginParams = new URLSearchParams({ next: `${path}${request.nextUrl.search}` });
-  return new NextResponse(null, {
-    status: 307,
-    headers: { Location: `/login?${loginParams.toString()}` },
-  });
+  const appBaseUrl = process.env.APP_BASE_URL || request.nextUrl.origin;
+  const loginUrl = new URL(`/login?${loginParams.toString()}`, appBaseUrl);
+  return NextResponse.redirect(loginUrl, 307);
 }
 
 export const config = {
