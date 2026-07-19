@@ -19,13 +19,17 @@ export async function POST(request: NextRequest) {
     !password ||
     !verifyAdminCredentials(suppliedUsername, suppliedPassword, username, password)
   ) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("error", "invalid");
-    loginUrl.searchParams.set("next", nextPath);
-    return NextResponse.redirect(loginUrl, 303);
+    const loginParams = new URLSearchParams({ error: "invalid", next: nextPath });
+    return new NextResponse(null, {
+      status: 303,
+      headers: { Location: `/login?${loginParams.toString()}` },
+    });
   }
 
-  const response = NextResponse.redirect(new URL(nextPath, request.url), 303);
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: { Location: nextPath },
+  });
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,
     value: await createAdminSessionToken(password),

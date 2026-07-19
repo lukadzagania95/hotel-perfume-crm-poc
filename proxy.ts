@@ -24,9 +24,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
-  const loginUrl = new URL("/login", request.url);
-  loginUrl.searchParams.set("next", `${path}${request.nextUrl.search}`);
-  return NextResponse.redirect(loginUrl);
+  const loginParams = new URLSearchParams({ next: `${path}${request.nextUrl.search}` });
+  return new NextResponse(null, {
+    status: 307,
+    headers: { Location: `/login?${loginParams.toString()}` },
+  });
 }
 
 export const config = {
