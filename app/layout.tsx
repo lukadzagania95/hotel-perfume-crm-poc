@@ -38,7 +38,7 @@ export default function RootLayout({
             <strong>{emailSettings.mode === "test" ? "TEST MODE" : "LIVE MODE"}</strong>
             <span>
               {emailSettings.mode === "test"
-                ? `All outbound email is redirected to ${emailSettings.testRecipient || "the configured test inbox"}.`
+                ? "All outbound email is redirected to the configured test inbox."
                 : "Outbound email is delivered to each hotel's contact address."}
             </span>
           </div>
