@@ -298,6 +298,7 @@ export async function checkInboxForContextualReplies(): Promise<ProcessResult> {
     const unseenUids = (await client.search({ seen: false }, { uid: true })) || [];
     const recentUids = unseenUids.slice(-50);
     if (recentUids.length === 0) return result;
+    const handledUids: number[] = [];
 
     for await (const message of client.fetch(
       recentUids,
@@ -324,15 +325,19 @@ export async function checkInboxForContextualReplies(): Promise<ProcessResult> {
         providerMessageId: parsed.messageId || fallbackMessageId(baseEmail),
       });
 
-      if (processed.handled && message.uid) {
-        await client.messageFlagsAdd(message.uid, ["\\Seen"], { uid: true });
-      }
+      // ImapFlow commands cannot be issued while a fetch iterator is active. Queue handled
+      // messages and update their flags in one command after the stream has completed.
+      if (processed.handled && message.uid) handledUids.push(message.uid);
       if (!processed.contextual) continue;
 
       result.contextual += 1;
       if (processed.status === "applied") result.applied += 1;
       else if (processed.status === "needsReview") result.needsReview += 1;
       else if (processed.status === "error") result.errors += 1;
+    }
+
+    if (handledUids.length > 0) {
+      await client.messageFlagsAdd(handledUids, ["\\Seen"], { uid: true });
     }
   } finally {
     lock.release();
