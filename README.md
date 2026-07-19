@@ -12,7 +12,7 @@ follow-up, and conservative processing of email replies.
 - Failed sends can be retried; successful sends are not repeated inside the same schedule window.
 - Incoming replies are only auto-applied when the sender is trusted, one room is referenced, the intent
   is supported, and a valid transition exists. Other messages go to manual review.
-- UI access is protected with HTTP Basic authentication in production, cron endpoints use a separate
+- UI access is protected with a signed, HTTP-only administrator session in production; cron endpoints use a separate
   bearer secret, and `/api/health` exposes only non-sensitive readiness state.
 - Stock changes and the matching inbound-email record are committed in one database transaction.
 

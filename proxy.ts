@@ -1,24 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ADMIN_SESSION_COOKIE, createAdminSessionToken, safeEqual } from "@/lib/adminAuth";
 
-function unauthorized() {
-  return new NextResponse("Authentication required", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="HOC CRM", charset="UTF-8"' },
-  });
-}
-
-function safeEqual(left: string, right: string) {
-  const length = Math.max(left.length, right.length);
-  let mismatch = left.length ^ right.length;
-  for (let index = 0; index < length; index += 1) {
-    mismatch |= (left.charCodeAt(index) || 0) ^ (right.charCodeAt(index) || 0);
-  }
-  return mismatch === 0;
-}
-
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (path === "/api/health" || path.startsWith("/api/cron/")) return NextResponse.next();
+  if (path === "/login" || path === "/api/auth/login") return NextResponse.next();
 
   const username = process.env.ADMIN_USERNAME || "";
   const password = process.env.ADMIN_PASSWORD || "";
@@ -30,23 +16,17 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const authorization = request.headers.get("authorization") || "";
-  if (!authorization.startsWith("Basic ")) return unauthorized();
+  const suppliedToken = request.cookies.get(ADMIN_SESSION_COOKIE)?.value || "";
+  const expectedToken = await createAdminSessionToken(password);
+  if (safeEqual(suppliedToken, expectedToken)) return NextResponse.next();
 
-  try {
-    const decoded = atob(authorization.slice(6));
-    const separator = decoded.indexOf(":");
-    const suppliedUsername = separator >= 0 ? decoded.slice(0, separator) : "";
-    const suppliedPassword = separator >= 0 ? decoded.slice(separator + 1) : "";
-
-    if (safeEqual(suppliedUsername, username) && safeEqual(suppliedPassword, password)) {
-      return NextResponse.next();
-    }
-  } catch {
-    // Malformed Basic credentials are handled as unauthorized.
+  if (path.startsWith("/api/")) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
-  return unauthorized();
+  const loginUrl = new URL("/login", request.url);
+  loginUrl.searchParams.set("next", `${path}${request.nextUrl.search}`);
+  return NextResponse.redirect(loginUrl);
 }
 
 export const config = {

@@ -29,6 +29,9 @@ export default function RootLayout({
               <Link href="/emails/templates">Email Templates</Link>
               <Link href="/emails/logs">Email Log</Link>
               <Link href="/emails/incoming">Incoming Emails</Link>
+              <form action="/api/auth/logout" method="post">
+                <button type="submit" className="nav-signout">Sign out</button>
+              </form>
             </nav>
           </header>
           <div className={`environment-banner ${emailSettings.mode}`} role="status">
