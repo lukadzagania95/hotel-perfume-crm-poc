@@ -108,6 +108,40 @@ button.danger {
   padding: 28px;
 }
 
+.environment-banner {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 9px 20px;
+  text-align: center;
+}
+
+.environment-banner.test {
+  background: #fff4d8;
+  color: #744500;
+}
+
+.environment-banner.live {
+  background: #dcfae6;
+  color: #125c31;
+}
+
+.environment-banner span {
+  font-size: 13px;
+}
+
+.table-note {
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+  max-width: 260px;
+}
+
+.error-text {
+  color: var(--danger);
+}
+
 .page-header {
   align-items: flex-start;
   display: flex;
@@ -168,6 +202,93 @@ h3 {
   overflow: hidden;
 }
 
+.table-wrap.compact {
+  border-radius: 6px;
+}
+
+.table-wrap.nested {
+  background: white;
+}
+
+.hotel-dashboard {
+  background: transparent;
+}
+
+.hotel-table > thead th {
+  background: #e9eef4;
+}
+
+.hotel-title-row > td {
+  background: #f8fafc;
+  border-bottom: 0;
+  padding: 18px 18px 10px;
+}
+
+.hotel-title-content {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hotel-title-content .subtle-link {
+  font-size: 22px;
+}
+
+.hotel-title-content span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.hotel-object-row > td {
+  background: white;
+  padding-bottom: 14px;
+  padding-top: 14px;
+  vertical-align: middle;
+}
+
+.hotel-object-row td:first-child {
+  border-left: 4px solid var(--brand);
+}
+
+.stock-count {
+  color: #344054;
+  font-weight: 700;
+}
+
+.opportunity-subrow > td {
+  background: #f4f7fa;
+  padding: 0 16px 18px 28px;
+}
+
+.subtable-shell {
+  display: grid;
+  gap: 8px;
+}
+
+.subtable-title {
+  align-items: center;
+  color: #344054;
+  display: flex;
+  font-size: 13px;
+  font-weight: 750;
+  justify-content: space-between;
+  padding-top: 12px;
+}
+
+.subtable-title span:last-child {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.opportunity-subrow th {
+  background: #f8fafc;
+}
+
+.opportunity-subrow .nested td {
+  background: white;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -207,6 +328,19 @@ label {
   font-weight: 650;
 }
 
+legend {
+  color: #344054;
+  font-size: 13px;
+  font-weight: 650;
+  padding: 0;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
 input,
 textarea {
   border: 1px solid #cfd6e1;
@@ -228,6 +362,45 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.section-summary {
+  color: var(--brand);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.checkbox-label {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: #344054;
+  display: inline-flex;
+  gap: 8px;
+  min-height: 38px;
+  padding: 7px 10px;
+}
+
+.checkbox-label input {
+  min-height: 0;
+  width: auto;
+}
+
+.template-title-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
 }
 
 .badge {
@@ -282,6 +455,20 @@ textarea {
   font-weight: 700;
 }
 
+.example-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.example-list code {
+  background: #f2f5f8;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: #344054;
+  padding: 8px 10px;
+}
+
 @media (max-width: 760px) {
   .topbar,
   .page-header {
@@ -299,5 +486,10 @@ textarea {
 
   .table-wrap {
     overflow-x: auto;
+  }
+
+  .opportunity-subrow > td {
+    padding-left: 14px;
+    padding-right: 14px;
   }
 }

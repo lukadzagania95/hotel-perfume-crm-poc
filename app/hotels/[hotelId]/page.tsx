@@ -93,7 +93,12 @@ export default async function HotelDetailPage({
 
       <section className="panel">
         <h2>Edit Hotel</h2>
-        <form action={updateHotel} className="form" style={{ marginTop: 14 }}>
+        <form
+          action={updateHotel}
+          className="form"
+          key={`${hotel.id}-${hotel.currentProductStock}-${hotel.currentSampleStock}-${hotel.updatedAt.toISOString()}`}
+          style={{ marginTop: 14 }}
+        >
           <input type="hidden" name="hotelId" value={hotel.id} />
           <div className="grid two">
             <div className="field">
@@ -212,6 +217,7 @@ export default async function HotelDetailPage({
                           <input type="hidden" name="hotelId" value={hotel.id} />
                           <input type="hidden" name="opportunityId" value={row.id} />
                           <input type="hidden" name="nextStatus" value={nextStatus} />
+                          <input type="hidden" name="returnTo" value={`/hotels/${hotel.id}`} />
                           <button
                             type="submit"
                             className={nextStatus === "FAIL" ? "danger" : "secondary"}

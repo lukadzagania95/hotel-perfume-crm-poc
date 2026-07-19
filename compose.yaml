@@ -1,0 +1,16 @@
+services:
+  crm:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: file:/data/hoc.db
+      NODE_ENV: production
+      SEED_DEMO_DATA: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - crm-data:/data
+
+volumes:
+  crm-data:
