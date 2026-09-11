@@ -23,22 +23,39 @@ enum EmailTemplateType {
 enum EmailLogStatus {
   DRAFT
   SIMULATED
+  SENT
+  FAILED
+}
+
+enum IncomingEmailIntent {
+  SAMPLE_PLACED
+  SAMPLE_USED
+  PRODUCT_PURCHASED
+  GUEST_CHECKED_OUT
+  UNKNOWN
+}
+
+enum IncomingEmailStatus {
+  APPLIED
+  NEEDS_REVIEW
+  ERROR
 }
 
 model Hotel {
-  id                   String        @id @default(cuid())
+  id                   String   @id @default(cuid())
   hotelName            String
   contactEmail         String
   originalProductStock Int
   currentProductStock  Int
   originalSampleStock  Int
   currentSampleStock   Int
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  opportunities        Opportunity[]
-  emailLogs            EmailLog[]
-  stockEvents          StockEvent[]
+  opportunities  Opportunity[]
+  emailLogs      EmailLog[]
+  incomingEmails IncomingEmail[]
+  stockEvents    StockEvent[]
 }
 
 model Opportunity {
@@ -56,31 +73,36 @@ model Opportunity {
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
 
-  hotel                Hotel             @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-  stockEvents          StockEvent[]
+  hotel          Hotel           @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  stockEvents    StockEvent[]
+  incomingEmails IncomingEmail[]
 }
 
 model StockEvent {
-  id            String      @id @default(cuid())
+  id            String   @id @default(cuid())
   hotelId       String
   opportunityId String?
   eventType     String
   quantity      Int
   reason        String
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime @default(now())
 
-  hotel         Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  hotel       Hotel        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
 }
 
 model EmailTemplate {
-  id        String            @id @default(cuid())
-  type      EmailTemplateType @unique
-  label     String
-  subject   String
-  body      String
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id              String             @id @default(cuid())
+  type            EmailTemplateType? @unique
+  label           String
+  subject         String
+  body            String
+  frequencyDays   Int                @default(7)
+  triggerStatuses String             @default("")
+  isDefault       Boolean            @default(false)
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 }
 
 model EmailSchedule {
@@ -92,15 +114,50 @@ model EmailSchedule {
 }
 
 model EmailLog {
-  id             String            @id @default(cuid())
-  hotelId        String
-  templateType   EmailTemplateType
-  templateLabel  String
-  recipientEmail String
-  subject        String
-  body           String
-  status         EmailLogStatus    @default(DRAFT)
-  createdAt      DateTime          @default(now())
+  id                     String             @id @default(cuid())
+  hotelId                String
+  templateType           EmailTemplateType?
+  emailTemplateId        String?
+  templateLabel          String
+  intendedRecipientEmail String?
+  recipientEmail         String
+  fromEmail              String?
+  deliveryMode           String             @default("TEST")
+  subject                String
+  body                   String
+  status                 EmailLogStatus     @default(DRAFT)
+  providerMessageId      String?
+  dedupeKey              String?            @unique
+  attemptCount           Int                @default(0)
+  errorMessage           String?
+  sentAt                 DateTime?
+  createdAt              DateTime           @default(now())
 
-  hotel          Hotel             @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  @@index([hotelId, emailTemplateId, deliveryMode, sentAt])
+  @@index([status, createdAt])
+}
+
+model IncomingEmail {
+  id                String              @id @default(cuid())
+  hotelId           String
+  opportunityId     String?
+  providerMessageId String?             @unique
+  fromEmail         String
+  subject           String
+  body              String
+  roomLabel         String?
+  intent            IncomingEmailIntent
+  status            IncomingEmailStatus
+  actionSummary     String
+  errorMessage      String?
+  receivedAt        DateTime
+  createdAt         DateTime            @default(now())
+
+  hotel       Hotel        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+
+  @@index([hotelId, receivedAt])
+  @@index([status, receivedAt])
 }

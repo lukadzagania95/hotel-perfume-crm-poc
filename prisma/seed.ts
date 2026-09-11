@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { DEFAULT_EMAIL_CONFIGS } from "../lib/emailConfig";
+import { DEFAULT_EMAIL_CONFIGS, serializeTriggerStatuses } from "../lib/emailConfig";
 
 const prisma = new PrismaClient();
 
@@ -12,9 +12,16 @@ async function main() {
         label: config.label,
         subject: config.subject,
         body: config.body,
+        frequencyDays: config.frequencyDays,
+        triggerStatuses: serializeTriggerStatuses(config.triggerStatuses),
+        isDefault: true,
+        isActive: true,
       },
       update: {
         label: config.label,
+        frequencyDays: config.frequencyDays,
+        triggerStatuses: serializeTriggerStatuses(config.triggerStatuses),
+        isDefault: true,
       },
     });
 
@@ -28,7 +35,9 @@ async function main() {
     });
   }
 
-  const existingHotels = await prisma.hotel.count();
+  const shouldSeedDemoData =
+    process.env.SEED_DEMO_DATA === "true" || process.env.NODE_ENV !== "production";
+  const existingHotels = shouldSeedDemoData ? await prisma.hotel.count() : 1;
 
   if (existingHotels === 0) {
     const hotel = await prisma.hotel.create({

@@ -1,0 +1,14 @@
+.git
+.github
+.next
+node_modules
+.pnpm-store
+.env
+.env.*
+*.log
+**/*.db*
+**/*.sqlite*
+docs
+tests
+coverage
+backups
